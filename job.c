@@ -21,7 +21,33 @@ job_t *job_new(pid_t pid, unsigned int id, unsigned int priority,
  */
 job_t *job_copy(job_t *src, job_t *dst)
 {
-    return src;
+    if (src == NULL)
+    {
+        return NULL;
+    }
+
+    if (strnlen(src->label, MAX_NAME_SIZE) != MAX_NAME_SIZE - 1)
+    {
+        return NULL;
+    }
+
+    if (src == dst)
+    {
+        return dst;
+    }
+
+    if (dst == NULL)
+    {
+        dst = (job_t *)malloc(sizeof(job_t));
+        if (dst == NULL)
+        {
+            return NULL;
+        }
+    }
+
+    *dst = *src;
+
+    return dst;
 }
 
 /*
