@@ -133,7 +133,31 @@ char *job_to_str(job_t *job, char *str)
  */
 job_t *str_to_job(char *str, job_t *job)
 {
-    return NULL;
+    if (job == NULL)
+    {
+        job = malloc(sizeof(job_t));
+        if (job == NULL)
+            return NULL;
+    }
+
+    if (str == NULL)
+        return NULL;
+
+    if (strnlen(str, JOB_STR_SIZE) != JOB_STR_SIZE - 1)
+        return NULL;
+
+    char label[MAX_NAME_SIZE];
+    int amount = sscanf(str, JOB_STR_FMT,
+                        &job->pid,
+                        &job->id,
+                        &job->priority,
+                        label);
+    if (amount != 4)
+        return NULL;
+
+    snprintf(job->label, MAX_NAME_SIZE, "%s", label);
+
+    return job;
 }
 
 /*
@@ -143,5 +167,7 @@ job_t *str_to_job(char *str, job_t *job)
  */
 void job_delete(job_t *job)
 {
-    return;
+    if (job == NULL)
+        return;
+    free(job);
 }
