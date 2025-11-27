@@ -22,27 +22,19 @@ job_t *job_new(pid_t pid, unsigned int id, unsigned int priority,
 job_t *job_copy(job_t *src, job_t *dst)
 {
     if (src == NULL)
-    {
         return NULL;
-    }
 
     if (strnlen(src->label, MAX_NAME_SIZE) != MAX_NAME_SIZE - 1)
-    {
         return NULL;
-    }
 
     if (src == dst)
-    {
         return dst;
-    }
 
     if (dst == NULL)
     {
         dst = (job_t *)malloc(sizeof(job_t));
         if (dst == NULL)
-        {
             return NULL;
-        }
     }
 
     *dst = *src;
@@ -56,9 +48,7 @@ job_t *job_copy(job_t *src, job_t *dst)
 void job_init(job_t *job)
 {
     if (job == NULL)
-    {
         return;
-    }
 
     job->pid = 0;
     job->id = 0;
@@ -71,7 +61,20 @@ void job_init(job_t *job)
  */
 bool job_is_equal(job_t *j1, job_t *j2)
 {
-    return false;
+    if (j1 == j2)
+        return true;
+    if (j1 == NULL || j2 == NULL)
+        return false;
+    if (j1->pid != j2->pid)
+        return false;
+    if (j1->id != j2->id)
+        return false;
+    if (j1->priority != j2->priority)
+        return false;
+    if (strncmp(j1->label, j2->label, MAX_NAME_SIZE) != 0)
+        return false;
+
+    return true;
 }
 
 /*
