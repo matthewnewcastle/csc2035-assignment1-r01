@@ -133,6 +133,12 @@ char *job_to_str(job_t *job, char *str)
  */
 job_t *str_to_job(char *str, job_t *job)
 {
+    if (str == NULL)
+        return NULL;
+
+    if (strnlen(str, JOB_STR_SIZE) != JOB_STR_SIZE - 1)
+        return NULL;
+
     if (job == NULL)
     {
         job = malloc(sizeof(job_t));
@@ -140,18 +146,8 @@ job_t *str_to_job(char *str, job_t *job)
             return NULL;
     }
 
-    if (str == NULL)
-        return NULL;
-
-    if (strnlen(str, JOB_STR_SIZE) != JOB_STR_SIZE - 1)
-        return NULL;
-
     char label[MAX_NAME_SIZE];
-    int amount = sscanf(str, JOB_STR_FMT,
-                        &job->pid,
-                        &job->id,
-                        &job->priority,
-                        label);
+    int amount = sscanf(str, JOB_STR_FMT, &job->pid, &job->id, &job->priority, label);
     if (amount != 4)
         return NULL;
 
