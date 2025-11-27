@@ -55,7 +55,16 @@ job_t *job_copy(job_t *src, job_t *dst)
  */
 void job_init(job_t *job)
 {
-    return;
+    if (job == NULL)
+    {
+        return;
+    }
+
+    job->pid = 0;
+    job->id = 0;
+    job->priority = 0;
+    strncpy(job->label, PAD_STRING, MAX_NAME_SIZE - 1);
+    job->label[MAX_NAME_SIZE - 1] = '\0';
 }
 
 /*
