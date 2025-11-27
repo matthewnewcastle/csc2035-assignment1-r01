@@ -109,7 +109,21 @@ job_t *job_set(job_t *job, pid_t pid, unsigned int id, unsigned int priority,
  */
 char *job_to_str(job_t *job, char *str)
 {
-    return NULL;
+    if (job == NULL)
+        return NULL;
+
+    if (strnlen(job->label, MAX_NAME_SIZE) != MAX_NAME_SIZE - 1)
+        return NULL;
+
+    if (str == NULL)
+    {
+        str = malloc(JOB_STR_SIZE);
+        if (str == NULL)
+            return NULL;
+    }
+
+    snprintf(str, JOB_STR_SIZE, JOB_STR_FMT, job->pid, job->id, job->priority, job->label);
+    return str;
 }
 
 /*
