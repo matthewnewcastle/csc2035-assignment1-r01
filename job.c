@@ -63,8 +63,7 @@ void job_init(job_t *job)
     job->pid = 0;
     job->id = 0;
     job->priority = 0;
-    strncpy(job->label, PAD_STRING, MAX_NAME_SIZE - 1);
-    job->label[MAX_NAME_SIZE - 1] = '\0';
+    snprintf(job->label, MAX_NAME_SIZE, "%s", PAD_STRING);
 }
 
 /*
