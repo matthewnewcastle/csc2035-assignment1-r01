@@ -86,6 +86,18 @@ bool job_is_equal(job_t *j1, job_t *j2)
 job_t *job_set(job_t *job, pid_t pid, unsigned int id, unsigned int priority,
                const char *label)
 {
+    if (job == NULL)
+        return NULL;
+
+    job->pid = pid;
+    job->id = id;
+    job->priority = priority;
+
+    if (label == NULL)
+        snprintf(job->label, MAX_NAME_SIZE, "%s", PAD_STRING);
+    else
+        snprintf(job->label, MAX_NAME_SIZE, "%s%s", label, PAD_STRING);
+
     return job;
 }
 
