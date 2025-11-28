@@ -77,7 +77,61 @@ int joblog_init(proc_t *proc)
  */
 job_t *joblog_read(proc_t *proc, int entry_num, job_t *job)
 {
-    return NULL;
+    int saved_error = errno;
+
+    if (proc == NULL || entry_num < 0)
+    {
+        errno = saved_error;
+        return NULL;
+    }
+
+    char *file_name = new_log_name(proc);
+    if (file_name == NULL)
+    {
+        errno = saved_error;
+        return NULL;
+    }
+
+    FILE *fptr = fopen(file_name, "r");
+    if (fptr == NULL)
+    {
+        free(file_name);
+        errno = saved_error;
+        return NULL;
+    }
+
+    if (fseek(fptr, entry_num * JOB_STR_SIZE, SEEK_SET) != 0)
+    {
+        fclose(fptr);
+        free(file_name);
+        errno = saved_error;
+        return NULL;
+    }
+
+    char buffer[JOB_STR_SIZE + 2];
+    char *line = fgets(buffer, sizeof(buffer), fptr);
+    if (line == NULL)
+    {
+        fclose(fptr);
+        free(file_name);
+        errno = saved_error;
+        return NULL;
+    }
+
+    for (int i = 0; buffer[i] != '\0'; i++)
+    {
+        if (buffer[i] == '\n')
+        {
+            buffer[i] = '\0';
+            break;
+        }
+    }
+
+    job_t *resulting_job = str_to_job(buffer, job);
+    fclose(fptr);
+    free(file_name);
+    errno = saved_error;
+    return resulting_job;
 }
 
 /*
