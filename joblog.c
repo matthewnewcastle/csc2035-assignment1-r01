@@ -142,7 +142,36 @@ job_t *joblog_read(proc_t *proc, int entry_num, job_t *job)
  */
 void joblog_write(proc_t *proc, job_t *job)
 {
-    return;
+    int saved_error = errno;
+
+    if (proc == NULL || job == NULL)
+    {
+        errno = saved_error;
+        return;
+    }
+
+    char *file_name = new_log_name(proc);
+    if (file_name == NULL)
+    {
+        errno = saved_error;
+        return;
+    }
+
+    FILE *fptr = fopen(file_name, "a");
+    if (fptr == NULL)
+    {
+        free(file_name);
+        errno = saved_error;
+        return;
+    }
+
+    char buffer[JOB_STR_SIZE];
+    char *job_str = job_to_str(job, buffer);
+    fprintf(fptr, "%s\n", job_str);
+
+    fclose(fptr);
+    free(file_name);
+    errno = saved_error;
 }
 
 /*
