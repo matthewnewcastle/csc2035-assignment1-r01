@@ -179,5 +179,22 @@ void joblog_write(proc_t *proc, job_t *job)
  */
 void joblog_delete(proc_t *proc)
 {
-    return;
+    int saved_error = errno;
+
+    if (proc == NULL)
+    {
+        errno = saved_error;
+        return;
+    }
+
+    char *file_name = new_log_name(proc);
+    if (file_name == NULL)
+    {
+        errno = saved_error;
+        return;
+    }
+
+    unlink(file_name);
+    free(file_name);
+    errno = saved_error;
 }
