@@ -47,7 +47,8 @@ void pri_jobqueue_init(pri_jobqueue_t *pjq)
  */
 job_t *pri_jobqueue_dequeue(pri_jobqueue_t *pjq, job_t *dst)
 {
-    return NULL;
+    if (pjq == NULL || dst == NULL || pri_jobqueue_is_empty(pjq))
+        return NULL;
 }
 
 /*
@@ -73,7 +74,9 @@ void pri_jobqueue_enqueue(pri_jobqueue_t *pjq, job_t *job)
  */
 bool pri_jobqueue_is_empty(pri_jobqueue_t *pjq)
 {
-    return true;
+    if (pjq == NULL || pjq->size == 0)
+        return true;
+    return false;
 }
 
 /*
@@ -81,7 +84,9 @@ bool pri_jobqueue_is_empty(pri_jobqueue_t *pjq)
  */
 bool pri_jobqueue_is_full(pri_jobqueue_t *pjq)
 {
-    return true;
+    if (pjq == NULL || pjq->size == pjq->buf_size)
+        return true;
+    return false;
 }
 
 /*
