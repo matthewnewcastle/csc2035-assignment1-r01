@@ -107,7 +107,9 @@ job_t *pri_jobqueue_peek(pri_jobqueue_t *pjq, job_t *dst)
  */
 int pri_jobqueue_size(pri_jobqueue_t *pjq)
 {
-    return 0;
+    if (pjq == NULL)
+        return 0;
+    return pjq->size;
 }
 
 /*
