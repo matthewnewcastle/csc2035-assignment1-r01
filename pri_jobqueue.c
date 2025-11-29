@@ -14,7 +14,14 @@
  */
 pri_jobqueue_t *pri_jobqueue_new()
 {
-    return NULL;
+    pri_jobqueue_t *pjq = (pri_jobqueue_t *)malloc(sizeof(pri_jobqueue_t));
+
+    if (pjq == NULL)
+        return NULL;
+
+    pri_jobqueue_init(pjq);
+
+    return pjq;
 }
 
 /*
@@ -22,7 +29,11 @@ pri_jobqueue_t *pri_jobqueue_new()
  */
 void pri_jobqueue_init(pri_jobqueue_t *pjq)
 {
-    return;
+    pjq->buf_size = JOB_BUFFER_SIZE;
+    pjq->size = 0;
+
+    for (int i = 0; i < JOB_BUFFER_SIZE; i++)
+        job_init(&pjq->jobs[i]);
 }
 
 /*
