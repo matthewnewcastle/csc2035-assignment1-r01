@@ -7,6 +7,29 @@
 #include "pri_jobqueue.h"
 
 /*
+ * Private helper to find the index of the highest priority job.
+ * Returns -1 if queue is empty or no valid jobs found.
+ */
+static int find_best_index(pri_jobqueue_t *pjq)
+{
+    if (pjq->size == 0)
+        return -1;
+
+    int best_index = -1;
+    int best_priority = 2147483647; // Max int
+
+    for (int i = 0; i < pjq->size; i++)
+    {
+        if (pjq->jobs[i].priority < best_priority)
+        {
+            best_index = i;
+            best_priority = pjq->jobs[i].priority;
+        }
+    }
+    return best_index;
+}
+
+/*
  * TODO: you must implement this function that allocates a job queue and
  * initialise it.
  * Hint:
@@ -29,10 +52,13 @@ pri_jobqueue_t *pri_jobqueue_new()
  */
 void pri_jobqueue_init(pri_jobqueue_t *pjq)
 {
+    if (pjq == NULL)
+        return;
+
     pjq->buf_size = JOB_BUFFER_SIZE;
     pjq->size = 0;
 
-    for (int i = 0; i < JOB_BUFFER_SIZE; i++)
+    for (int i = 0; i < pjq->buf_size; i++)
         job_init(&pjq->jobs[i]);
 }
 
@@ -47,8 +73,21 @@ void pri_jobqueue_init(pri_jobqueue_t *pjq)
  */
 job_t *pri_jobqueue_dequeue(pri_jobqueue_t *pjq, job_t *dst)
 {
-    if (pjq == NULL || dst == NULL || pri_jobqueue_is_empty(pjq))
+    if (pjq == NULL || pri_jobqueue_is_empty(pjq))
         return NULL;
+
+    int best_index = find_best_index(pjq);
+
+    job_t *j = job_copy(&pjq->jobs[best_index], dst);
+
+    for (int i = best_index; i < pjq->size - 1; i++)
+        job_copy(&pjq->jobs[i + 1], &pjq->jobs[i]);
+
+    pjq->size--;
+
+    job_init(&pjq->jobs[pjq->size]);
+
+    return j;
 }
 
 /*
@@ -66,7 +105,12 @@ job_t *pri_jobqueue_dequeue(pri_jobqueue_t *pjq, job_t *dst)
  */
 void pri_jobqueue_enqueue(pri_jobqueue_t *pjq, job_t *job)
 {
-    return;
+    if (pjq == NULL || job == NULL || pri_jobqueue_is_full(pjq) || job->priority == 0)
+        return;
+
+    job_copy(job, &pjq->jobs[pjq->size]);
+
+    pjq->size++;
 }
 
 /*
@@ -76,6 +120,7 @@ bool pri_jobqueue_is_empty(pri_jobqueue_t *pjq)
 {
     if (pjq == NULL || pjq->size == 0)
         return true;
+
     return false;
 }
 
@@ -86,6 +131,7 @@ bool pri_jobqueue_is_full(pri_jobqueue_t *pjq)
 {
     if (pjq == NULL || pjq->size == pjq->buf_size)
         return true;
+
     return false;
 }
 
@@ -99,7 +145,10 @@ bool pri_jobqueue_is_full(pri_jobqueue_t *pjq)
  */
 job_t *pri_jobqueue_peek(pri_jobqueue_t *pjq, job_t *dst)
 {
-    return NULL;
+    if (pjq == NULL || pri_jobqueue_is_empty(pjq))
+        return NULL;
+
+    return job_copy(&pjq->jobs[find_best_index(pjq)], dst);
 }
 
 /*
@@ -109,6 +158,7 @@ int pri_jobqueue_size(pri_jobqueue_t *pjq)
 {
     if (pjq == NULL)
         return 0;
+
     return pjq->size;
 }
 
@@ -117,7 +167,10 @@ int pri_jobqueue_size(pri_jobqueue_t *pjq)
  */
 int pri_jobqueue_space(pri_jobqueue_t *pjq)
 {
-    return 0;
+    if (pjq == NULL)
+        return 0;
+
+    return pjq->buf_size - pjq->size;
 }
 
 /*
@@ -127,5 +180,8 @@ int pri_jobqueue_space(pri_jobqueue_t *pjq)
  */
 void pri_jobqueue_delete(pri_jobqueue_t *pjq)
 {
-    return;
+    if (pjq == NULL)
+        return;
+
+    free(pjq);
 }
