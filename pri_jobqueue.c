@@ -16,7 +16,7 @@ static int find_best_index(pri_jobqueue_t *pjq)
         return -1;
 
     int best_index = -1;
-    int best_priority = 2147483647; // Max int
+    int best_priority = 2147483647;
 
     for (int i = 0; i < pjq->size; i++)
     {
