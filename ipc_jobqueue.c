@@ -28,7 +28,15 @@ ipc_jobqueue_t *ipc_jobqueue_new(proc_t *proc)
  */
 job_t *ipc_jobqueue_dequeue(ipc_jobqueue_t *ijq, job_t *dst)
 {
-    return NULL;
+    if (ijq == NULL)
+        return NULL;
+
+    pri_jobqueue_t *pjq = (pri_jobqueue_t *)ijq->addr;
+    job_t *j = pri_jobqueue_dequeue(pjq, dst);
+
+    do_critical_work(ijq->proc);
+
+    return j;
 }
 
 /*
@@ -38,7 +46,13 @@ job_t *ipc_jobqueue_dequeue(ipc_jobqueue_t *ijq, job_t *dst)
  */
 void ipc_jobqueue_enqueue(ipc_jobqueue_t *ijq, job_t *job)
 {
-    return;
+    if (ijq == NULL || job == NULL)
+        return;
+
+    pri_jobqueue_t *pjq = (pri_jobqueue_t *)ijq->addr;
+    pri_jobqueue_enqueue(pjq, job);
+
+    do_critical_work(ijq->proc);
 }
 
 /*
@@ -48,7 +62,15 @@ void ipc_jobqueue_enqueue(ipc_jobqueue_t *ijq, job_t *job)
  */
 bool ipc_jobqueue_is_empty(ipc_jobqueue_t *ijq)
 {
-    return true;
+    if (ijq == NULL)
+        return true;
+
+    pri_jobqueue_t *pjq = (pri_jobqueue_t *)ijq->addr;
+    bool is_empty = pri_jobqueue_is_empty(pjq);
+
+    do_critical_work(ijq->proc);
+
+    return is_empty;
 }
 
 /*
@@ -58,7 +80,15 @@ bool ipc_jobqueue_is_empty(ipc_jobqueue_t *ijq)
  */
 bool ipc_jobqueue_is_full(ipc_jobqueue_t *ijq)
 {
-    return true;
+    if (ijq == NULL)
+        return true;
+
+    pri_jobqueue_t *pjq = (pri_jobqueue_t *)ijq->addr;
+    bool is_full = pri_jobqueue_is_full(pjq);
+
+    do_critical_work(ijq->proc);
+
+    return is_full;
 }
 
 /*
@@ -68,7 +98,15 @@ bool ipc_jobqueue_is_full(ipc_jobqueue_t *ijq)
  */
 job_t *ipc_jobqueue_peek(ipc_jobqueue_t *ijq, job_t *dst)
 {
-    return NULL;
+    if (ijq == NULL)
+        return NULL;
+
+    pri_jobqueue_t *pjq = (pri_jobqueue_t *)ijq->addr;
+    job_t *j = pri_jobqueue_peek(pjq, dst);
+
+    do_critical_work(ijq->proc);
+
+    return j;
 }
 
 /*
@@ -78,7 +116,15 @@ job_t *ipc_jobqueue_peek(ipc_jobqueue_t *ijq, job_t *dst)
  */
 int ipc_jobqueue_size(ipc_jobqueue_t *ijq)
 {
-    return 0;
+    if (ijq == NULL)
+        return 0;
+
+    pri_jobqueue_t *pjq = (pri_jobqueue_t *)ijq->addr;
+    int size = pri_jobqueue_size(pjq);
+
+    do_critical_work(ijq->proc);
+
+    return size;
 }
 
 /*
@@ -88,7 +134,15 @@ int ipc_jobqueue_size(ipc_jobqueue_t *ijq)
  */
 int ipc_jobqueue_space(ipc_jobqueue_t *ijq)
 {
-    return 0;
+    if (ijq == NULL)
+        return 0;
+
+    pri_jobqueue_t *pjq = (pri_jobqueue_t *)ijq->addr;
+    int space = pri_jobqueue_space(pjq);
+
+    do_critical_work(ijq->proc);
+
+    return space;
 }
 
 /*
@@ -98,5 +152,8 @@ int ipc_jobqueue_space(ipc_jobqueue_t *ijq)
  */
 void ipc_jobqueue_delete(ipc_jobqueue_t *ijq)
 {
-    return;
+    if (ijq == NULL)
+        return;
+
+    ipc_delete(ijq);
 }
