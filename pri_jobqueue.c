@@ -108,9 +108,8 @@ void pri_jobqueue_enqueue(pri_jobqueue_t *pjq, job_t *job)
     if (pjq == NULL || job == NULL || pri_jobqueue_is_full(pjq) || job->priority == 0)
         return;
 
-    job_copy(job, &pjq->jobs[pjq->size]);
-
-    pjq->size++;
+    if (job_copy(job, &pjq->jobs[pjq->size]) != NULL)
+        pjq->size++;
 }
 
 /*

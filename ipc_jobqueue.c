@@ -3,6 +3,7 @@
  * 240674999
  */
 #include "ipc_jobqueue.h"
+#include <stdlib.h>
 
 /*
  * DO NOT EDIT the ipc_jobqueue_new function.

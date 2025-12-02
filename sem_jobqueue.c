@@ -7,6 +7,7 @@
 #include <semaphore.h>
 #include "shobject_name.h"
 #include "sem_jobqueue.h"
+#include <stdlib.h>
 
 /*
  * DO NOT EDIT the following declarations that are used to detect
